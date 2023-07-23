@@ -208,4 +208,4 @@ This project is licensed under the MIT License.
 * Author: Reinhardt Weyers <br>
 * Email: weyers70@gmail.com <br>
 * GitHub: [github.com/yourusername](https://github.com/nftpixels) <br>
-* LinkedIn: [linkedin.com/in/yourprofile](https://www.linkedin.com/in/reinhardtweyers/)https://www.linkedin.com/in/reinhardtweyers/ <br>
+* LinkedIn: https://www.linkedin.com/in/reinhardtweyers/ <br>
