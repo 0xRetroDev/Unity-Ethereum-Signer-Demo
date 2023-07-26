@@ -26,6 +26,14 @@ public class CreateWallet : MonoBehaviour
         public string playerId;
     }
 
+    // Data class for the response codes coming from the server
+    [Serializable]
+    public class ErrorResponse
+    {
+        public string error;
+        public string message;
+    }
+
     // Response class for GenerateWallet API endpoint
     [Serializable]
     public class GenerateWalletResponse
@@ -36,7 +44,7 @@ public class CreateWallet : MonoBehaviour
     // Singleton for us to have access to this script through other scripts
     public static CreateWallet instance;
 
-    private void Start()
+    public void Start()
     {
         // Singleton
         instance = this;
@@ -44,8 +52,15 @@ public class CreateWallet : MonoBehaviour
         // If the connecting player doesn't have a playerId, we generate a new one and store it the playerPrefs to be reused
         if (!PlayerPrefs.HasKey("playerID"))
         {
+            Debug.Log("No ID Found, Generating a new one");
+            string newPlayerID = Guid.NewGuid().ToString();
+
             // Generate a unique playerId for the player and store it in playerPrefs
-            PlayerPrefs.SetString("playerID", Guid.NewGuid().ToString());
+            PlayerPrefs.SetString("playerID", newPlayerID);
+            playerId = newPlayerID;
+        }
+        else
+        {
             playerId = PlayerPrefs.GetString("playerID");
         }
     }
@@ -53,7 +68,7 @@ public class CreateWallet : MonoBehaviour
     // We can call this function to await the creation of our new signer
     public async void InvokeWalletCreate()
     {
-      await GenerateSigner();
+        await GenerateSigner();
     }
 
     // Invoke this method to generate a new signer and assign it to the playerID
@@ -98,14 +113,31 @@ public class CreateWallet : MonoBehaviour
             }
             else
             {
-                Debug.LogError("Error generating wallet: " + request.error);
+                {
+                    // Check if there's an error in the response data
+                    var responseJson = request.downloadHandler.text;
+                    if (!string.IsNullOrEmpty(responseJson))
+                    {
+                        // Deserialize the JSON error message from the response
+                        var errorData = JsonUtility.FromJson<ErrorResponse>(responseJson);
+                        Debug.LogError("Error generating wallet: " + errorData.message);
+
+                        // The only reason we'd get this error is to let us know we already have a signer, which means we can load the level
+                        SceneManager.LoadScene("GameScene");
+                    }
+                    else
+                    {
+                        // If there's no response data or error message, display the generic error
+                        Debug.LogError("Error generating wallet: " + request.result);
+                    }
+                }
             }
         }
     }
 
 
     // Our API call to refill a players gas if they are new or running low
-    public IEnumerator SendGas(string uri)
+    IEnumerator SendGas(string uri)
     {
         Debug.Log("Attempting to send gas to: " + walletAddress);
 
