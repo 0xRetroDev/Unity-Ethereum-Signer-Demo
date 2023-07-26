@@ -104,7 +104,7 @@ public class CreateWallet : MonoBehaviour
                 var responseData = JsonUtility.FromJson<GenerateWalletResponse>(responseJson);
                 Debug.Log("Wallet generated for player " + playerId + " - Address: " + responseData.address);
 
-                // Assing our wallet address variable
+                // Adding our wallet address variable
                 walletAddress = responseData.address;
 
                 // Provide gas to the created wallet (You'll need to configure your own gas distribution API for the below)
@@ -159,11 +159,6 @@ public class CreateWallet : MonoBehaviour
                 case UnityWebRequest.Result.ConnectionError:
                     Debug.Log("Connection Error!");
                     break;
-            }
-            // If anything goes wrong, we debug that below
-            if (webRequest.result != UnityWebRequest.Result.Success)
-            {
-                Debug.Log(webRequest.error);
             }
         }
     }
