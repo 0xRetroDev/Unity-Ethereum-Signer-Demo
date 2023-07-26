@@ -77,6 +77,15 @@ The server will debug everything for you as the requests come in. We make use of
 ![image](https://github.com/nftpixels/Unity-Ethereum-Signer-Demo/assets/97366705/305ad3f0-3ea9-4eb1-ae5a-3ffd23da7bb3)
 <br><br>
 
+It's worth noting that the server will check the **playerId** when a new wallet creation request comes in. If the **playerId** already has a matching entry and signer, the server will respond with an error message that will be received within the unity client. You can use this to validate any required game logic that requires you to check if a player already has a signer. In this demo, we simply load the next scene once we know that the player has an existing signer wallet:
+<br><br>
+![image](https://github.com/nftpixels/Unity-Ethereum-Signer-Demo/assets/97366705/f7e3c53b-b940-4287-b98f-36381024e674)
+<br><br>
+![image](https://github.com/nftpixels/Unity-Ethereum-Signer-Demo/assets/97366705/fa37383a-557f-43c2-b76d-a8d11cc7901c)
+<br><br>
+
+
+
 
 
 
@@ -93,11 +102,23 @@ Generate a new Ethereum wallet for each player at the beginning of the game. Pla
 ```c#
     private void Start()
     {
-        // Generate a unique playerId for the player
-        playerId = Guid.NewGuid().ToString();
+        // If the connecting player doesn't have a playerId, we generate a new one and store it the playerPrefs to be reused (This is optional and you can remove it if you prefer to generate a brand new signer for every session)
+        if (!PlayerPrefs.HasKey("playerID"))
+        {
+            Debug.Log("No ID Found, Generating a new one");
+            string newPlayerID = Guid.NewGuid().ToString();
 
-        // Generate a wallet
-        await GenerateSigner();
+            // Generate a unique playerId for the player and store it in playerPrefs
+            PlayerPrefs.SetString("playerID", newPlayerID);
+            playerId = newPlayerID;
+        }
+        else
+        {
+            playerId = PlayerPrefs.GetString("playerID");
+        }
+
+        // Invoke our signer method
+        GenerateSigner();
     }
 
 
@@ -134,7 +155,7 @@ Generate a new Ethereum wallet for each player at the beginning of the game. Pla
                 var responseData = JsonUtility.FromJson<GenerateWalletResponse>(responseJson);
                 Debug.Log("Wallet generated for player " + playerId + " - Address: " + responseData.address);
 
-                // Assing our wallet address variable
+                // Adding our wallet address variable
                 walletAddress = responseData.address;
 
                 // Provide gas to the created wallet (You'll need to configure your own gas distribution API for the below)
@@ -143,7 +164,24 @@ Generate a new Ethereum wallet for each player at the beginning of the game. Pla
             }
             else
             {
-                Debug.LogError("Error generating wallet: " + request.error);
+                {
+                    // Check if there's an error in the response data
+                    var responseJson = request.downloadHandler.text;
+                    if (!string.IsNullOrEmpty(responseJson))
+                    {
+                        // Deserialize the JSON error message from the response
+                        var errorData = JsonUtility.FromJson<ErrorResponse>(responseJson);
+                        Debug.LogError("Error generating wallet: " + errorData.message);
+
+                        // The only reason we'd get this error is to let us know we already have a signer, which means we can load the level
+                        SceneManager.LoadScene("GameScene");
+                    }
+                    else
+                    {
+                        // If there's no response data or error message, display the generic error
+                        Debug.LogError("Error generating wallet: " + request.result);
+                    }
+                }
             }
         }
     }
