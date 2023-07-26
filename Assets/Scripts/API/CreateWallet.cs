@@ -38,11 +38,16 @@ public class CreateWallet : MonoBehaviour
 
     private void Start()
     {
-        //Singleton
+        // Singleton
         instance = this;
 
-        // Generate a unique playerId for the player
-        playerId = Guid.NewGuid().ToString();
+        // If the connecting player doesn't have a playerId, we generate a new one and store it the playerPrefs to be reused
+        if (!PlayerPrefs.HasKey("playerID"))
+        {
+            // Generate a unique playerId for the player and store it in playerPrefs
+            PlayerPrefs.SetString("playerID", Guid.NewGuid().ToString());
+            playerId = PlayerPrefs.GetString("playerID");
+        }
     }
 
     // We can call this function to await the creation of our new signer
