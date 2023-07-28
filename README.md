@@ -247,3 +247,9 @@ This project is licensed under the MIT License.
 * Email: weyers70@gmail.com <br>
 * GitHub: [github.com/yourusername](https://github.com/nftpixels) <br>
 * LinkedIn: https://www.linkedin.com/in/reinhardtweyers/ <br>
+
+## Security & Liability
+This repository and all of its sub-packages and connected packages are WITHOUT ANY WARRANTY; without even the implied warranty for any user commerical or otherwise. The creators and contributors of this package may not be held liable for any damages, losses, issues, or problems caused resulting in the use of this package for any reason.
+
+**EXPERIMENTAL NOTICE**
+This package is under heavy development. Use at your own risk.
