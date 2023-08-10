@@ -22,7 +22,7 @@
 
 ## Introduction
 
-In this very simple Unity demo we look at how we can create a new signer (wallet) for our player when he starts the game, and invoke a smart contract method when he collects coins. We'll be using the [Unity Ethereum Signer API](https://github.com/nftpixels/Unity-Ethereum-Signer-API). Pleae make sure that the server is running and ready to receive requests before proceeding.
+In this very simple Unity demo we look at how we can create a new signer (wallet) for our player when he starts the game, and invoke a smart contract method when he collects coins. We'll be using the [Unity Ethereum Signer API](https://github.com/nftpixels/Unity-Ethereum-Signer-API). Please make sure that the server is running and ready to receive requests before proceeding.
 <br>
 
 
